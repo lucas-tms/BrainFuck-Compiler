@@ -1,16 +1,14 @@
 #include <stdio.h>
+
 #include "list.h"
+#include "parser.h"
 
 int main(int argc, char const *argv[]) {
-  List l = createList();
-
+  List l;
+  if(argc > 1)
+    l = prepareCode(argv[1]);
+  else
+    l = prepareCode(NULL);
   displayList(l);
-  append(l, createPair('+', 3));
-  append(l, createPair('>', 8));
-  displayList(l);
-  l = pop(l);
-  displayList(l);
-
-  deleteList(l);
   return 0;
 }

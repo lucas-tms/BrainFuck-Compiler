@@ -53,3 +53,5 @@ dkms.conf
 
 # Binaries directory
 bin/
+
+brain

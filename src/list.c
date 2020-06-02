@@ -20,10 +20,8 @@ List createList() {
    Returns 0 otherwise */
 
 int isEmpty(List l) {
-	if(l->val == NULL)
-		return 1;
-	else
-		return 0;
+	if(l->val == NULL) return 1;
+	else return 0;
 }
 
 
@@ -54,8 +52,7 @@ List append(List l, Pair p) {
    Returns the list */
 
 List pop(List l) {
-	if(isEmpty(l))
-		return l;
+	if(isEmpty(l)) return l;
 	else {
 		List mem = l, precmem = NULL;
 		while(mem->fo != NULL) {
@@ -86,8 +83,7 @@ void deleteList(List l) {
 /* This function displays the content of the list */
 
 void displayList(List l) {
-	if(isEmpty(l))
-		printf("<empty list>\n");
+	if(isEmpty(l)) printf("<empty list>\n");
 	else {
 		List mem;
 		printf("[");

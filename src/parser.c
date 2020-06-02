@@ -23,7 +23,7 @@ List prepareCode(const char* file, int* minshift, int* maxshift) {
 
   List l = createList();
   char c, previousSymb = 0;
-  int nb = 0, bracketCounter = 0, shift = 0;
+  int nb = 0, bracketCounter = 0, shift = 0, negBrackets = 0;
   *minshift = 0, *maxshift = 0;
 
   /* Reading the program and creating the associated list */
@@ -37,10 +37,8 @@ List prepareCode(const char* file, int* minshift, int* maxshift) {
       case '>':
       case '.':
       case ',':
-        if (c == '[')
-          bracketCounter++;
-        else if(c == ']')
-          bracketCounter--;
+        if (c == '[') bracketCounter++;
+        else if(c == ']') bracketCounter--;
         else if(c == '>') {
           shift++;
           *maxshift = (*maxshift > shift) ? *maxshift : shift;
@@ -48,6 +46,10 @@ List prepareCode(const char* file, int* minshift, int* maxshift) {
         else if(c == '<') {
           shift--;
           *minshift = (*minshift < shift) ? *minshift : shift;
+        }
+
+        if(bracketCounter < 0) {
+          negBrackets = 1;
         }
 
         if(c != previousSymb && nb != 0) {
@@ -64,15 +66,18 @@ List prepareCode(const char* file, int* minshift, int* maxshift) {
     }
   }
   l = append(l, createPair(previousSymb, nb));
-  // displayList(l);
 
   /* Closing the file descriptor */
-  if(fd > 0)
-    close(fd);
+  if(fd > 2) close(fd);
 
   /* Checking the number of brackets */
   if(bracketCounter != 0) {
     fprintf(stderr, "\033[1mbrain: \033[1;31merror: \033[0mexpected same number of opening and closing brackets\n");
+    if(negBrackets) goto neg;
+    exit(EXIT_FAILURE);
+  }
+  if(negBrackets) {
+    neg: fprintf(stderr, "\033[1mbrain: \033[1;31merror: \033[0mopening brackets should be placed before closing brackets\n");
     exit(EXIT_FAILURE);
   }
 

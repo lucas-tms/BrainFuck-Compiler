@@ -12,7 +12,7 @@
    the process if there is not the same number of opening and closing
    brackets */
 
-List prepareCode(const char* file) {
+List prepareCode(const char* file, int* minshift, int* maxshift) {
   int fd;
   if(file != NULL) {
     fd = open(file, O_RDONLY);
@@ -23,7 +23,8 @@ List prepareCode(const char* file) {
 
   List l = createList();
   char c, previousSymb = 0;
-  int nb = 0, bracketCounter = 0;
+  int nb = 0, bracketCounter = 0, shift = 0;
+  *minshift = 0, *maxshift = 0;
 
   /* Reading the program and creating the associated list */
   while(read(fd, &c, 1) > 0) {
@@ -40,6 +41,14 @@ List prepareCode(const char* file) {
           bracketCounter++;
         else if(c == ']')
           bracketCounter--;
+        else if(c == '>') {
+          shift++;
+          *maxshift = (*maxshift > shift) ? *maxshift : shift;
+        }
+        else if(c == '<') {
+          shift--;
+          *minshift = (*minshift < shift) ? *minshift : shift;
+        }
 
         if(c != previousSymb && nb != 0) {
           l = append(l, createPair(previousSymb, nb));
@@ -68,4 +77,12 @@ List prepareCode(const char* file) {
   }
 
   return l;
+}
+
+
+/* This functions works out the number of bytes to allocate to give to the
+  program */
+
+int placeToAllocate(int min, int max) {
+  return max - min + 1;
 }

@@ -12,8 +12,10 @@
 
 /* Main function to write the assembly code */
 
-void writeCode(List l, int place, int minshift) {
-  int fd = open("file.asm", O_WRONLY|O_CREAT);
+void writeCode(List l, int place, int minshift, char* name) {
+  if(access(name, F_OK) == 0) fprintf(stderr, "\033[1mbrain: \033[1;35mwarning: \033[0moutput file \"%s\" already exists\n", name);
+  
+  int fd = open(name, O_WRONLY|O_CREAT, S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH);
   int brackets = 0;
 
   /* Intializing place for the cells */
@@ -62,6 +64,7 @@ void writeCode(List l, int place, int minshift) {
   dprintf(fd, "\n\tmov eax, 1\t;exiting the program\n\tint 0x80\n");
   deleteList(l);
   close(fd);
+  free(name);
 }
 
 

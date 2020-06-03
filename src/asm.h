@@ -3,7 +3,7 @@
 
 #include "list.h"
 
-void writeCode(List l, int place, int minshift);
+void writeCode(List l, int place, int minshift, char* name);
 void bss(int fd, int place);
 void setMemZero(int fd, int place);
 void initialShift(int fd, int minshift);

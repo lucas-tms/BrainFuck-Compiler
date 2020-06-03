@@ -9,6 +9,9 @@
 #include "asm.h"
 #include "list.h"
 
+
+/* Main function to write the assembly code */
+
 void writeCode(List l, int place, int minshift) {
   int fd = open("file.asm", O_WRONLY|O_CREAT);
   int brackets = 0;
@@ -62,6 +65,8 @@ void writeCode(List l, int place, int minshift) {
 }
 
 
+/* Function that allocates the needed space for memory cells */
+
 void bss(int fd, int place) {
   char str[] = "section .bss\n\ttab resb ";
   write(fd, str, strlen(str));
@@ -80,16 +85,22 @@ void bss(int fd, int place) {
 }
 
 
+/* Function that sets the memory cells to zero */
+
 void setMemZero(int fd, int place) {
   dprintf(fd, "\tmov ecx, %d\ninit:\n\tlea eax, [tab+ecx-1]\n\tmov byte [eax], 0\n\tloop init\t;setting all memory cells to zero\n\n", place);
 }
 
+
+/* Function that centers the pointer if it goes on the left of the cell #0 */
 
 void initialShift(int fd, int minshift) {
   if(minshift != 0) dprintf(fd, "\tlea eax, [tab+%d]\t;centering the pointer\n\n", -minshift);
 }
 
 
+
+/* Functions that write assembly code for 8 brainf*** basic operations +-<>[]., */
 
 // +
 void add(int fd, int nb) {

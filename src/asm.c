@@ -8,6 +8,7 @@
 
 #include "asm.h"
 #include "list.h"
+#include "stack.h"
 
 
 /* Main function to write the assembly code */
@@ -31,6 +32,7 @@ void writeCode(List l, int place, int minshift, char* name) {
 
   /* The program */
   List mem;
+  Stack s = createStack();
   for(mem = l; mem != NULL; mem = mem->fo) {
     switch (mem->val->symb) {
       case '+':
@@ -46,10 +48,10 @@ void writeCode(List l, int place, int minshift, char* name) {
         rightShift(fd, mem->val->nb);
         break;
       case '[':
-        openingBracket(fd, mem->val->nb, &brackets);
+        openingBracket(fd, mem->val->nb, &brackets, &s);
         break;
       case ']':
-        closingBracket(fd, mem->val->nb, &brackets);
+        closingBracket(fd, mem->val->nb, &brackets, &s);
         break;
       case '.':
         dot(fd, mem->val->nb);
@@ -62,6 +64,7 @@ void writeCode(List l, int place, int minshift, char* name) {
 
   /* Exiting the program */
   dprintf(fd, "\n\tmov eax, 1\t;exiting the program\n\tint 0x80\n");
+  deleteStack(s);
   deleteList(l);
   close(fd);
 }
@@ -116,24 +119,30 @@ void sub(int fd, int nb) {
 
 // <
 void leftShift(int fd, int nb) {
-  dprintf(fd, "\tsub eax, %d\n", nb); // same as lea eax, [tab-nb] ??
+  dprintf(fd, "\tsub eax, %d\n", nb);
 }
 
 // >
 void rightShift(int fd, int nb) {
-  dprintf(fd, "\tadd eax, %d\n", nb); // idem
+  dprintf(fd, "\tadd eax, %d\n", nb);
 }
 
 // [
-void openingBracket(int fd, int nb, int* brackets) {
-  (*brackets)++;
-  dprintf(fd, "\n\tmov bl, [eax]\n\tcmp bl, 0\n\tje endbrack%d\nbrack%d:\n", *brackets, *brackets);
+void openingBracket(int fd, int nb, int* brackets, Stack* s) {
+  for(int i = 0; i < nb; i++) {
+    (*brackets)++;
+    *s = stack(*s, *brackets);
+    dprintf(fd, "\n\tmov bl, [eax]\n\tcmp bl, 0\n\tje endbrack%d\nbrack%d:\n", *brackets, *brackets);
+  }
 }
 
 // ]
-void closingBracket(int fd, int nb, int* brackets) {
-  dprintf(fd, "\tmov bl, [eax]\n\tcmp bl, 0\n\tjne brack%d\nendbrack%d:\n\n", *brackets, *brackets);
-  (*brackets)--;
+void closingBracket(int fd, int nb, int* brackets, Stack* s) {
+  for(int i = 0; i < nb; i++) {
+    int val = (*s)->val;
+    *s = popStack(*s);
+    dprintf(fd, "\tmov bl, [eax]\n\tcmp bl, 0\n\tjne brack%d\nendbrack%d:\n\n", val, val);
+  }
 }
 
 // .

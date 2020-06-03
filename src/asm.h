@@ -2,6 +2,7 @@
 #define ASM
 
 #include "list.h"
+#include "stack.h"
 
 void writeCode(List l, int place, int minshift, char* name);
 void bss(int fd, int place);
@@ -11,8 +12,8 @@ void add(int fd, int nb);
 void sub(int fd, int nb);
 void leftShift(int fd, int nb);
 void rightShift(int fd, int nb);
-void openingBracket(int fd, int nb, int* brackets);
-void closingBracket(int fd, int nb, int* brackets);
+void openingBracket(int fd, int nb, int* brackets, Stack* s);
+void closingBracket(int fd, int nb, int* brackets, Stack* s);
 void dot(int fd, int nb);
 void comma(int fd, int nb);
 

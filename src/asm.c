@@ -113,10 +113,14 @@ void rightShift(int fd, int nb) {
 
 // [
 void openingBracket(int fd, int nb, int* brackets) {
+  (*brackets)++;
+  dprintf(fd, "\nbrack%d:\n", *brackets);
 }
 
 // ]
 void closingBracket(int fd, int nb, int* brackets) {
+  dprintf(fd, "\tcmp [eax], 0\n\tjne brack%d\n\n", *brackets);
+  (*brackets)--;
 }
 
 // .

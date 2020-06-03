@@ -81,7 +81,7 @@ void bss(int fd, int place) {
 
 
 void setMemZero(int fd, int place) {
-  dprintf(fd, "\tmov ecx, %d\ninit:\n\tlea eax, [tab+ecx-1]\n\tmov [eax], 0\n\tloop init\t;setting all memory cells to zero\n\n", place);
+  dprintf(fd, "\tmov ecx, %d\ninit:\n\tlea eax, [tab+ecx-1]\n\tmov byte [eax], 0\n\tloop init\t;setting all memory cells to zero\n\n", place);
 }
 
 
@@ -114,12 +114,12 @@ void rightShift(int fd, int nb) {
 // [
 void openingBracket(int fd, int nb, int* brackets) {
   (*brackets)++;
-  dprintf(fd, "\nbrack%d:\n", *brackets);
+  dprintf(fd, "\n\tmov bl, [eax]\n\tcmp bl, 0\n\tje endbrack%d\nbrack%d:\n", *brackets, *brackets);
 }
 
 // ]
 void closingBracket(int fd, int nb, int* brackets) {
-  dprintf(fd, "\tcmp [eax], 0\n\tjne brack%d\n\n", *brackets);
+  dprintf(fd, "\tmov bl, [eax]\n\tcmp bl, 0\n\tjne brack%d\nendbrack%d:\n\n", *brackets, *brackets);
   (*brackets)--;
 }
 
@@ -140,4 +140,15 @@ void dot(int fd, int nb) {
 
 // ,
 void comma(int fd, int nb) {
+  for(int i = 0; i < nb; i++) {
+    dprintf(fd, "\n\tpush eax\n\n");
+
+    dprintf(fd, "\tmov ecx, eax\n");
+    dprintf(fd, "\tmov eax, 3\n");
+    dprintf(fd, "\tmov ebx, 0\n");
+    dprintf(fd, "\tmov edx, 1\n\n");
+
+    dprintf(fd, "\tint 0x80\n");
+    dprintf(fd, "\tpop eax\n\n");
+  }
 }

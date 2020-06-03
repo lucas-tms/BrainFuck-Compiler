@@ -19,6 +19,7 @@ void writeCode(List l, int place, int minshift) {
   /* Beginning of the program */
   char str[] = "section .text\n\tglobal _start\n\n_start:\n";
   write(fd, str, strlen(str));
+  setMemZero(fd, place);
 
   /* Shifting to center the pointer */
   initialShift(fd, minshift);
@@ -55,7 +56,7 @@ void writeCode(List l, int place, int minshift) {
   }
 
   /* Exiting the program */
-  dprintf(fd, "\n\tmov eax, 1\n\tint 0x80\n");
+  dprintf(fd, "\n\tmov eax, 1\t;exiting the program\n\tint 0x80\n");
   deleteList(l);
   close(fd);
 }
@@ -69,7 +70,7 @@ void bss(int fd, int place) {
   snprintf(nb, 10, "%d", place);
   write(fd, nb, strlen(nb));
 
-  char str2[] = "\t;setting cells size\n\n";
+  char str2[] = "\t;setting cells number\n\n";
   write(fd, str2, strlen(str2));
 
 
@@ -79,8 +80,13 @@ void bss(int fd, int place) {
 }
 
 
+void setMemZero(int fd, int place) {
+  dprintf(fd, "\tmov ecx, %d\ninit:\n\tlea eax, [tab+ecx-1]\n\tmov [eax], 0\n\tloop init\t;setting all memory cells to zero\n\n", place);
+}
+
+
 void initialShift(int fd, int minshift) {
-  dprintf(fd, "\tlea eax, [tab+%d]\t;centering the pointer\n\n", -minshift);
+  if(minshift != 0) dprintf(fd, "\tlea eax, [tab+%d]\t;centering the pointer\n\n", -minshift);
 }
 
 

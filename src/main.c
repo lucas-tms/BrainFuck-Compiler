@@ -12,15 +12,24 @@
 int main(int argc, char const *argv[]) {
   List l;
   int minshift, maxshift;
+  char silent;
 
   if(argc == 4) {
     if(strcmp(argv[2], "-o") != 0) {
-      fprintf(stderr, "Usage: brain <input> -o <output>\n");
+      fprintf(stderr, "Usage: brain <input> -o <output> [-v]\n");
       exit(EXIT_FAILURE);
     }
+    silent = 1;
+  }
+  else if(argc == 5) {
+    if((strcmp(argv[2], "-o") != 0) || (strcmp(argv[4], "-v") != 0)) {
+      fprintf(stderr, "Usage: brain <input> -o <output> [-v]\n");
+      exit(EXIT_FAILURE);
+    }
+    silent = 0;
   }
   else {
-    fprintf(stderr, "Usage: brain <input> -o <output>\n");
+    fprintf(stderr, "Usage: brain <input> -o <output> [-v]\n");
     exit(EXIT_FAILURE);
   }
 
@@ -44,6 +53,7 @@ int main(int argc, char const *argv[]) {
   else {
     wait(NULL);
   }
+  char* asmName = strdup(name);
   name[n+1] = 'o';
   name[n+2] = '\0';
 
@@ -54,6 +64,18 @@ int main(int argc, char const *argv[]) {
   else {
     wait(NULL);
   }
+
+  if(silent == 1) {
+    if(fork() == 0) {
+      execlp("rm", "rm", "-f", name, asmName, NULL);
+      exit(EXIT_SUCCESS);
+    }
+    else {
+      wait(NULL);
+    }
+  }
+
+  free(asmName);
   free(name);
 
   return 0;

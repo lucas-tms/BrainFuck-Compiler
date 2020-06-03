@@ -3,7 +3,7 @@ CFLAGS=-Wall
 .PHONY: all clean superclean
 all: brain
 
-brain: bin/main.o bin/list.o bin/parser.o
+brain: bin/main.o bin/list.o bin/parser.o bin/asm.o
 	gcc -o $@ $^
 
 bin/main.o: src/main.c
@@ -15,6 +15,9 @@ bin/list.o: src/list.c src/list.h
 	gcc -c $< -o $@ $(CFLAGS)
 
 bin/parser.o: src/parser.c src/parser.h
+	gcc -c $< -o $@ $(CFLAGS)
+
+bin/asm.o: src/asm.c src/asm.h
 	gcc -c $< -o $@ $(CFLAGS)
 
 clean:

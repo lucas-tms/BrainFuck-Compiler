@@ -33,7 +33,11 @@ The output is the name of the executable you want to give to it.
 
 The option `-v`, that stands for verbose, allows you to keep the intermediate assembly code and the object file.
 
-Finally, an executable file is produced by the compiler. Errors or warnings can be displayed on the screen to help you to debug you source. The executable won't be compiled if there are errors.
+Finally, an executable file is produced by the compiler. Errors or warnings can be displayed on the screen to help you to debug your source. The executable won't be compiled if there are errors.
+
+![compilation_scheme](img/compilation_scheme.png)
+
+<p style="text-align: center; font-weight: bold">Figure : Compilation scheme</p>
 
 ## Status of the project
 The project is almost completed, for it can compile sources. However, some improvements to do remains.
